@@ -18,4 +18,6 @@ This repo downloads ltntstools and any deps, then builds the entire project.
 
 ## Compilation
     ./build.sh v1.0.1
+    cd ltntstools/rpm && ./make-rpm.sh
+
 
