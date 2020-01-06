@@ -39,7 +39,7 @@ if [ ! -d bitstream ]; then
 fi
 
 if [ ! -d libdvbpsi ]; then
-	git clone http://git.videolan.org/git/libdvbpsi.git
+	git clone https://code.videolan.org/videolan/libdvbpsi.git
 	if [ "$DEP_LIBDVBPSI_TAG" != "" ]; then
 		cd libdvbpsi && git checkout $DEP_LIBDVBPSI_TAG && cd ..
 	fi
