@@ -2,11 +2,11 @@
 
 JOBS=8
 
+LIBLTNTSTOOLS_TAG=
 LTNTSTOOLS_TAG=
 DEP_BITSTREAM_TAG=
 DEP_LIBDVBPSI_TAG=
 DEP_FFMPEG_TAG=
-LTNTSTOOLS_TAG=
 
 if [ "$1" == "" ]; then
 	# Fine if they do not specify a tag
@@ -39,7 +39,7 @@ if [ ! -d bitstream ]; then
 fi
 
 if [ ! -d libdvbpsi ]; then
-	git clone http://git.videolan.org/git/libdvbpsi.git
+	git clone https://code.videolan.org/videolan/libdvbpsi.git
 	if [ "$DEP_LIBDVBPSI_TAG" != "" ]; then
 		cd libdvbpsi && git checkout $DEP_LIBDVBPSI_TAG && cd ..
 	fi
@@ -49,6 +49,13 @@ if [ ! -d ffmpeg ]; then
 	git clone https://git.ffmpeg.org/ffmpeg.git
 	if [ "$DEP_FFMPEG_TAG" != "" ]; then
 		cd ffmpeg && git checkout $DEP_FFMPEG_TAG && cd ..
+	fi
+fi
+
+if [ ! -d libltntstools ]; then
+	git clone git@github.com:LTNGlobal-opensource/libltntstools.git
+	if [ "$LIBLTNTSTOOLS_TAG" != "" ]; then
+		cd libltntstools && git checkout $LIBLTNTSTOOLS_TAG && cd ..
 	fi
 fi
 
@@ -77,6 +84,15 @@ pushd ffmpeg
 	export CFLAGS="-I$PWD/../target-root/usr/include"
 	export LDFLAGS="-L$PWD/../target-root/usr/lib"
 	./configure --prefix=$PWD/../target-root/usr --disable-iconv --enable-static
+	make -j$JOBS
+	make install
+popd
+
+pushd libltntstools
+	export CFLAGS="-I$PWD/../target-root/usr/include"
+	export LDFLAGS="-L$PWD/../target-root/usr/lib"
+	./autogen.sh --build
+	./configure --prefix=$PWD/../target-root/usr --enable-shared=no
 	make -j$JOBS
 	make install
 popd
