@@ -65,7 +65,7 @@ if [ ! -d libltntstools ]; then
 fi
 
 if [ ! -d ltntstools ]; then
-	git clone git@github.com:LTN-Global-opensource/ltntstools.git
+	git clone git@github.com:LTNGlobal-opensource/ltntstools.git
 	if [ "$LTNTSTOOLS_TAG" != "" ]; then
 		cd ltntstools && git checkout $LTNTSTOOLS_TAG && cd ..
 	fi
