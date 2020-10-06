@@ -88,7 +88,8 @@ popd
 pushd ffmpeg
 	export CFLAGS="-I$PWD/../target-root/usr/include"
 	export LDFLAGS="-L$PWD/../target-root/usr/lib"
-	./configure --prefix=$PWD/../target-root/usr --disable-iconv --enable-static
+	./configure --prefix=$PWD/../target-root/usr --disable-iconv --enable-static \
+		--disable-audiotoolbox --disable-videotoolbox --disable-avfoundation
 	make -j$JOBS
 	make install
 popd
