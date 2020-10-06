@@ -46,7 +46,10 @@ fi
 if [ ! -d libdvbpsi ]; then
 	git clone https://code.videolan.org/videolan/libdvbpsi.git
 	if [ "$DEP_LIBDVBPSI_TAG" != "" ]; then
-		cd libdvbpsi && git checkout $DEP_LIBDVBPSI_TAG && cd ..
+		cd libdvbpsi
+		git checkout $DEP_LIBDVBPSI_TAG
+		patch -p1 <../0000-libdvbpsi.patch
+		cd ..
 	fi
 fi
 
