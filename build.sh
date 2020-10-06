@@ -11,9 +11,9 @@ DEP_FFMPEG_TAG=
 if [ "$1" == "" ]; then
 	# Fine if they do not specify a tag
 	echo "No specific tag specified.  Using master"
-	DEP_BITSTREAM_TAG=20ce4345061499abc0389e9cd837665a62ad6add
-	DEP_LIBDVBPSI_TAG=d2a81c20a7704676048111b4f7ab24b95a904008
-	DEP_FFMPEG_TAG=9d3eb75cf637e6f2a664ad3ab67c4f785226f62e
+	#DEP_BITSTREAM_TAG=20ce4345061499abc0389e9cd837665a62ad6add
+	DEP_LIBDVBPSI_TAG=1.3.3
+	#DEP_FFMPEG_TAG=9d3eb75cf637e6f2a664ad3ab67c4f785226f62e
 	LTNTSTOOLS_TAG=master
 elif [ "$1" == "--installdeps" ]; then
 	sudo yum -y install libpcap-devel
