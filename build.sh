@@ -7,6 +7,8 @@ LTNTSTOOLS_TAG=
 DEP_BITSTREAM_TAG=
 DEP_LIBDVBPSI_TAG=
 DEP_FFMPEG_TAG=
+LIBKLSCTE35_TAG=
+LIBKLVANC_TAG=
 
 if [ "$1" == "" ]; then
 	# Fine if they do not specify a tag
@@ -60,6 +62,20 @@ if [ ! -d ffmpeg ]; then
 	fi
 fi
 
+if [ ! -d libklvanc ]; then
+	git clone https://github.com/LTNGlobal-opensource/libklvanc.git
+	if [ "$LIBKLVANC_TAG" != "" ]; then
+		cd libklvanc && git checkout $LIBKLVANC_TAG && cd ..
+	fi
+fi
+
+if [ ! -d libklscte35 ]; then
+	git clone https://github.com/LTNGlobal-opensource/libklscte35.git
+	if [ "$LIBKLSCTE35_TAG" != "" ]; then
+		cd libklscte35 && git checkout $LIBKLSCTE35_TAG && cd ..
+	fi
+fi
+
 if [ ! -d libltntstools ]; then
 	git clone git@github.com:LTNGlobal-opensource/libltntstools.git
 	if [ "$LIBLTNTSTOOLS_TAG" != "" ]; then
@@ -83,6 +99,24 @@ pushd libdvbpsi
 	export CFLAGS="-I$PWD/../target-root/usr/include"
 	export LDFLAGS="-L$PWD/../target-root/usr/lib"
 	./bootstrap
+	./configure --prefix=$PWD/../target-root/usr --enable-shared=no
+	make -j$JOBS
+	make install
+popd
+
+pushd libklvanc
+	export CFLAGS="-I$PWD/../target-root/usr/include"
+	export LDFLAGS="-L$PWD/../target-root/usr/lib"
+	./autogen.sh --build
+	./configure --prefix=$PWD/../target-root/usr --enable-shared=no
+	make -j$JOBS
+	make install
+popd
+
+pushd libklscte35
+	export CFLAGS="-I$PWD/../target-root/usr/include"
+	export LDFLAGS="-L$PWD/../target-root/usr/lib"
+	./autogen.sh --build
 	./configure --prefix=$PWD/../target-root/usr --enable-shared=no
 	make -j$JOBS
 	make install
