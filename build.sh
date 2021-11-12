@@ -85,14 +85,14 @@ if [ ! -d libklscte35 ]; then
 fi
 
 if [ ! -d libltntstools ]; then
-	git clone git@github.com:LTNGlobal-opensource/libltntstools.git
+	git clone https://github.com/LTNGlobal-opensource/libltntstools.git
 	if [ "$LIBLTNTSTOOLS_TAG" != "" ]; then
 		cd libltntstools && git checkout $LIBLTNTSTOOLS_TAG && cd ..
 	fi
 fi
 
 if [ ! -d ltntstools ]; then
-	git clone git@github.com:LTNGlobal-opensource/ltntstools.git
+	git clone https://github.com/LTNGlobal-opensource/ltntstools.git
 	if [ "$LTNTSTOOLS_TAG" != "" ]; then
 		cd ltntstools && git checkout $LTNTSTOOLS_TAG && cd ..
 	fi
