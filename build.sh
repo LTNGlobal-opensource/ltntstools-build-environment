@@ -17,6 +17,17 @@ if [ "$1" == "" ]; then
 	DEP_LIBDVBPSI_TAG=1.3.3
 	DEP_FFMPEG_TAG=9d3eb75cf637e6f2a664ad3ab67c4f785226f62e
 	LTNTSTOOLS_TAG=master
+elif [ "$1" == "--create-docker-builder" ]; then
+	docker build --network=host -f Dockerfile.builder -t ltntstools-builder .
+	#docker run --name tmp -it --net=host -t ltntstools-builder --name tmp --entry-point /src/build.sh
+	docker run --name tmp --net=host --entrypoint /src/build.sh -t ltntstools-builder
+	docker cp tmp:/src/ltntstools-build-environment/ltntstools/src/tstools_util .
+	docker container rm tmp
+	docker build -t ltntstools-runner --network=host -f Dockerfile.runner .
+
+	# Run the final app
+	docker run -it --rm --network=host --privileged ltntstools-runner
+	exit 0
 elif [ "$1" == "--installdeps" ]; then
 	sudo yum -y install libpcap-devel
 	sudo yum -y install zlib-devel

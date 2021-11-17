@@ -1,0 +1,17 @@
+# docker run -it --rm --net=host ubuntu:20.04
+
+FROM docker.io/ubuntu:20.04
+
+RUN apt update -y
+RUN apt install -y libpcap-dev
+
+RUN mkdir /app
+
+COPY tstools_util /app/tstools_util
+RUN cd /app && ./tstools_util --symlinks
+
+WORKDIR /app
+
+ENV SHELL /bin/bash
+
+CMD [ "/bin/bash" ]
