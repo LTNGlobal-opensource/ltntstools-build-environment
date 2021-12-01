@@ -60,9 +60,30 @@ elif [ "$1" == "v1.10.0" ]; then
 	LIBLTNTSTOOLS_TAG=22c48562b1c1900aa4c5735832c31d6174e99243
 	LIBKLSCTE35_TAG=3abd85f7921ca34d5d230d5549d846e8f25b73f2
 	LIBKLVANC_TAG=170887252d5868949508d634454234d44436a0a4
+elif [ "$1" == "v1.11.1" ]; then
+	DEP_BITSTREAM_TAG=20ce4345061499abc0389e9cd837665a62ad6add
+	DEP_LIBDVBPSI_TAG=d2a81c20a7704676048111b4f7ab24b95a904008
+	DEP_FFMPEG_TAG=9d3eb75cf637e6f2a664ad3ab67c4f785226f62e
+	LTNTSTOOLS_TAG=v1.11.1
+	LIBLTNTSTOOLS_TAG=bc3aef81117af874f85497057faeeb3b0dc2a51d
+	LIBKLSCTE35_TAG=3abd85f7921ca34d5d230d5549d846e8f25b73f2
+	LIBKLVANC_TAG=170887252d5868949508d634454234d44436a0a4
 else
 	echo "Invalid argument"
 	exit 1
+fi
+
+# Unpack the nielsen SDK, if it's available.
+NIELSEN_SDK=/storage/dev/NIELSEN/DecoderSdkMonitor_v1.4_Linux.tgz
+if [ -f $NIELSEN_SDK ]; then
+	if [ ! -d sdk-nielsen ]; then
+		mkdir -p sdk-nielsen
+		cd sdk-nielsen
+		tar zxvf $NIELSEN_SDK
+		cd ..
+	fi
+	NIELSEN_INC="-I$PWD/sdk-nielsen/package/include"
+	NIELSEN_LIB="-L$PWD/sdk-nielsen/package/lib"
 fi
 
 if [ ! -d bitstream ]; then
@@ -159,8 +180,8 @@ pushd ffmpeg
 popd
 
 pushd libltntstools
-	export CFLAGS="-I$PWD/../target-root/usr/include"
-	export LDFLAGS="-L$PWD/../target-root/usr/lib"
+	export CFLAGS="-I$PWD/../target-root/usr/include $NIELSEN_INC"
+	export LDFLAGS="-L$PWD/../target-root/usr/lib $NIELSEN_LIB"
 	./autogen.sh --build
 	./configure --prefix=$PWD/../target-root/usr --enable-shared=no
 	make -j$JOBS
