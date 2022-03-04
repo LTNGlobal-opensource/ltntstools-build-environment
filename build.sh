@@ -81,6 +81,13 @@ else
 	exit 1
 fi
 
+# Unpack the DekTec SDK
+if [ -f LinuxSDK_v2019.11.0.tar.gz ]; then
+	cd sdk-dektec
+	tar zxf LinuxSDK_v2019.11.0.tar.gz
+	cd ..
+fi
+
 # Unpack the nielsen SDK, if it's available.
 NIELSEN_SDK=/storage/dev/NIELSEN/DecoderSdkMonitor_v1.4_Linux.tgz
 if [ -f $NIELSEN_SDK ]; then
