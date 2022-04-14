@@ -9,6 +9,7 @@ DEP_LIBDVBPSI_TAG=
 DEP_FFMPEG_TAG=
 LIBKLSCTE35_TAG=
 LIBKLVANC_TAG=
+LIBMEDIAINGO_TAG=v21.09
 
 if [ "$1" == "" ]; then
 	# Fine if they do not specify a tag
@@ -33,6 +34,8 @@ elif [ "$1" == "--installdeps" ]; then
 	sudo yum -y install zlib-devel
 	sudo yum -y install ncurses-static
 	sudo yum -y install ncurses-devel
+	sudo yum -y install libzen-devel
+	sudo yum -y install librdkafka-devel
 	exit 0
 elif [ "$1" == "v1.0.1" ]; then
 	DEP_BITSTREAM_TAG=20ce4345061499abc0389e9cd837665a62ad6add
@@ -72,8 +75,16 @@ elif [ "$1" == "v1.12.0" ]; then
 	DEP_BITSTREAM_TAG=20ce4345061499abc0389e9cd837665a62ad6add
 	DEP_LIBDVBPSI_TAG=d2a81c20a7704676048111b4f7ab24b95a904008
 	DEP_FFMPEG_TAG=9d3eb75cf637e6f2a664ad3ab67c4f785226f62e
-	LTNTSTOOLS_TAG=v1.20.0
+	LTNTSTOOLS_TAG=v1.12.0
 	LIBLTNTSTOOLS_TAG=8b68b497be14f20441889005daad72321f4ac6c7
+	LIBKLSCTE35_TAG=3abd85f7921ca34d5d230d5549d846e8f25b73f2
+	LIBKLVANC_TAG=170887252d5868949508d634454234d44436a0a4
+elif [ "$1" == "v1.13.0" ]; then
+	DEP_BITSTREAM_TAG=20ce4345061499abc0389e9cd837665a62ad6add
+	DEP_LIBDVBPSI_TAG=d2a81c20a7704676048111b4f7ab24b95a904008
+	DEP_FFMPEG_TAG=9d3eb75cf637e6f2a664ad3ab67c4f785226f62e
+	LTNTSTOOLS_TAG=v1.13.0
+	LIBLTNTSTOOLS_TAG=1fe68eb105cc526e55d3e42d7ffe18549f706895
 	LIBKLSCTE35_TAG=3abd85f7921ca34d5d230d5549d846e8f25b73f2
 	LIBKLVANC_TAG=170887252d5868949508d634454234d44436a0a4
 else
@@ -99,6 +110,13 @@ if [ -f $NIELSEN_SDK ]; then
 	fi
 	NIELSEN_INC="-I$PWD/sdk-nielsen/package/include"
 	NIELSEN_LIB="-L$PWD/sdk-nielsen/package/lib"
+fi
+
+if [ ! -d MediaInfoLib ]; then
+	git clone https://github.com/MediaArea/MediaInfoLib.git
+	if [ "$LIBMEDIAINGO_TAG" != "" ]; then
+		cd MediaInfoLib && git checkout $LIBMEDIAINGO_TAG && cd ..
+	fi
 fi
 
 if [ ! -d bitstream ]; then
@@ -152,6 +170,13 @@ if [ ! -d ltntstools ]; then
 		cd ltntstools && git checkout $LTNTSTOOLS_TAG && cd ..
 	fi
 fi
+
+pushd MediaInfoLib/Project/GNU/Library
+	./autogen.sh
+	./configure --enable-shared=no --enable-static=yes --prefix=$PWD/../../../../target-root/usr
+	make -j$JOBS
+	make install
+popd
 
 pushd bitstream
 	make PREFIX=$PWD/../target-root/usr
