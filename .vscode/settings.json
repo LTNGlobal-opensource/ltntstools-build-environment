@@ -6,7 +6,8 @@
         "**/.git/objects/**": true,
         "**/.git/subtree-cache/**": true,
         "**/node_modules/*/**": true,
-        "**/ffmpeg": true
+        "**/ffmpeg": true,
+        "**/target-root/**": true,
     }
 
     "files.exclude": {
@@ -34,6 +35,7 @@
         "**/ltmain.sh": true,
         "**/missing": true,
         "**/depcomp": true,
+        "**/*.patch": true,
         "**/src/tstools_util": true,
         "**/src/tstools_pat_inspector": true,
         "**/src/tstools_pmt_inspector": true,
@@ -55,7 +57,6 @@
         "**/src/tstools_si_streammodel": true,
         "**/src/tstools_clock_inspector": true,
         "**/src/tstools_bitrate_smoother": true,
-
     },
     "files.associations": {
         "*h*h*h*hfunctional": "cpp",
