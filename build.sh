@@ -82,13 +82,21 @@ elif [ "$1" == "v1.12.0" ]; then
 	LIBLTNTSTOOLS_TAG=8b68b497be14f20441889005daad72321f4ac6c7
 	LIBKLSCTE35_TAG=3abd85f7921ca34d5d230d5549d846e8f25b73f2
 	LIBKLVANC_TAG=170887252d5868949508d634454234d44436a0a4
-elif [ "$1" == "v1.13.0" ]; then
+elif [ "$1" == "v1.13.1" ]; then
 	DEP_BITSTREAM_TAG=20ce4345061499abc0389e9cd837665a62ad6add
 	DEP_LIBDVBPSI_TAG=d2a81c20a7704676048111b4f7ab24b95a904008
 	DEP_FFMPEG_TAG=9d3eb75cf637e6f2a664ad3ab67c4f785226f62e
-	LTNTSTOOLS_TAG=v1.13.0
+	LTNTSTOOLS_TAG=v1.13.1
 	LIBLTNTSTOOLS_TAG=1fe68eb105cc526e55d3e42d7ffe18549f706895
 	LIBKLSCTE35_TAG=3abd85f7921ca34d5d230d5549d846e8f25b73f2
+	LIBKLVANC_TAG=170887252d5868949508d634454234d44436a0a4
+elif [ "$1" == "v1.14.0" ]; then
+	DEP_BITSTREAM_TAG=20ce4345061499abc0389e9cd837665a62ad6add
+	DEP_LIBDVBPSI_TAG=d2a81c20a7704676048111b4f7ab24b95a904008
+	DEP_FFMPEG_TAG=9d3eb75cf637e6f2a664ad3ab67c4f785226f62e
+	LTNTSTOOLS_TAG=v1.14.0
+	LIBLTNTSTOOLS_TAG=ee63772dea00a9dd763d1886700ef8f47375a2ca
+	LIBKLSCTE35_TAG=82dbcd1d540ed44ed1e421d708c8e2b1e5b64aa8
 	LIBKLVANC_TAG=170887252d5868949508d634454234d44436a0a4
 else
 	echo "Invalid argument"
@@ -113,6 +121,11 @@ if [ -f $NIELSEN_SDK ]; then
 	fi
 	NIELSEN_INC="-I$PWD/sdk-nielsen/package/include"
 	NIELSEN_LIB="-L$PWD/sdk-nielsen/package/lib"
+fi
+
+if [ ! -d srt ]; then
+	git clone https://github.com/Haivision/srt.git
+	cd srt && git checkout v1.4.4 -b dev && cd ..
 fi
 
 if [ ! -d MediaInfoLib ]; then
@@ -173,6 +186,10 @@ if [ ! -d ltntstools ]; then
 		cd ltntstools && git checkout $LTNTSTOOLS_TAG && cd ..
 	fi
 fi
+
+pushd srt
+	./configure --enable-static=ON --enable-shared=OFF --prefix=$PWD/../target-root/usr
+popd
 
 pushd MediaInfoLib/Project/GNU/Library
 	./autogen.sh
