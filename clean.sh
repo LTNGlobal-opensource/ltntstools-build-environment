@@ -6,3 +6,5 @@ rm -rf ffmpeg
 rm -rf ltntstools
 rm -rf libltntstools libklscte35 libklvanc
 rm -rf sdk-nielsen
+rm -rf srt
+rm -rf MediaInfoLib
