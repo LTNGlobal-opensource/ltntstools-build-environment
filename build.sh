@@ -125,7 +125,7 @@ fi
 
 if [ ! -d srt ]; then
 	git clone https://github.com/Haivision/srt.git
-	cd srt && git checkout v1.4.4 -b dev && cd ..
+	cd srt && git checkout v1.4.4 -b build && cd ..
 fi
 
 if [ ! -d MediaInfoLib ]; then
@@ -189,6 +189,8 @@ fi
 
 pushd srt
 	./configure --enable-static=ON --enable-shared=OFF --prefix=$PWD/../target-root/usr
+	make -j8
+	make install
 popd
 
 pushd MediaInfoLib/Project/GNU/Library
@@ -250,7 +252,7 @@ popd
 
 pushd ltntstools
 	export CFLAGS="-I$PWD/../target-root/usr/include"
-	export LDFLAGS="-L$PWD/../target-root/usr/lib"
+	export LDFLAGS="-L$PWD/../target-root/usr/lib -L$PWD/../target-root/usr/lib64"
 	./autogen.sh --build
 	./configure --prefix=$PWD/../target-root/usr --enable-shared=no
 	make -j$JOBS
