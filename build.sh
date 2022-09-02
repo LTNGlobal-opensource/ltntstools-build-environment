@@ -106,6 +106,14 @@ elif [ "$1" == "v1.15.1" ]; then
 	LIBLTNTSTOOLS_TAG=ef7a28aaf9c06f81c5f67329be9a4d9df7284d14
 	LIBKLSCTE35_TAG=82dbcd1d540ed44ed1e421d708c8e2b1e5b64aa8
 	LIBKLVANC_TAG=170887252d5868949508d634454234d44436a0a4
+elif [ "$1" == "v1.16.0" ]; then
+	DEP_BITSTREAM_TAG=20ce4345061499abc0389e9cd837665a62ad6add
+	DEP_LIBDVBPSI_TAG=d2a81c20a7704676048111b4f7ab24b95a904008
+	DEP_FFMPEG_TAG=release/4.4
+	LTNTSTOOLS_TAG=v1.16.0
+	LIBLTNTSTOOLS_TAG=352dd774a9aecd894bbb98f24a39de553dd4fc42
+	LIBKLSCTE35_TAG=82dbcd1d540ed44ed1e421d708c8e2b1e5b64aa8
+	LIBKLVANC_TAG=170887252d5868949508d634454234d44436a0a4
 else
 	echo "Invalid argument"
 	exit 1
@@ -242,9 +250,11 @@ popd
 
 pushd ffmpeg
 	export CFLAGS="-I$PWD/../target-root/usr/include"
-	export LDFLAGS="-L$PWD/../target-root/usr/lib"
+	export LDFLAGS="-L$PWD/../target-root/usr/lib -L$PWD/../target-root/usr/lib64 -lcrypto -lm -lsrt"
+	export PKG_CONFIG_PATH="$PWD/../target-root/usr/lib64/pkgconfig"
 	./configure --prefix=$PWD/../target-root/usr --disable-iconv --enable-static \
-		--disable-audiotoolbox --disable-videotoolbox --disable-avfoundation
+		--disable-audiotoolbox --disable-videotoolbox --disable-avfoundation \
+		--enable-libsrt --pkg-config-flags="--static"
 	make -j$JOBS
 	make install
 popd
