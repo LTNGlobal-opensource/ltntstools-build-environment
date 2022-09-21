@@ -36,6 +36,7 @@
         "**/missing": true,
         "**/depcomp": true,
         "**/*.patch": true,
+        "**/*.ts": true,
         "**/src/tstools_util": true,
         "**/src/tstools_pat_inspector": true,
         "**/src/tstools_pmt_inspector": true,
@@ -57,6 +58,10 @@
         "**/src/tstools_si_streammodel": true,
         "**/src/tstools_clock_inspector": true,
         "**/src/tstools_bitrate_smoother": true,
+        "**/src/tstools_nielsen_inspector": true,
+        "**/src/tstools_asi2ip": true,
+        "**/src/tstools_srt_transmit": true,
+        "**/src/tstools_smpte2038_inspector": true,
     },
     "files.associations": {
         "*h*h*h*hfunctional": "cpp",
