@@ -10,6 +10,8 @@ DEP_FFMPEG_TAG=
 LIBKLSCTE35_TAG=
 LIBKLVANC_TAG=
 LIBMEDIAINGO_TAG=v21.09
+BUILD_JSONC=1
+LIBJSONC_TAG=6c55f65d07a972dbd2d1668aab2e0056ccdd52fc
 
 if [ "$1" == "" ]; then
 	# Fine if they do not specify a tag
@@ -114,9 +116,24 @@ elif [ "$1" == "v1.16.0" ]; then
 	LIBLTNTSTOOLS_TAG=352dd774a9aecd894bbb98f24a39de553dd4fc42
 	LIBKLSCTE35_TAG=82dbcd1d540ed44ed1e421d708c8e2b1e5b64aa8
 	LIBKLVANC_TAG=170887252d5868949508d634454234d44436a0a4
+elif [ "$1" == "v1.17.0" ]; then
+	DEP_BITSTREAM_TAG=20ce4345061499abc0389e9cd837665a62ad6add
+	DEP_LIBDVBPSI_TAG=d2a81c20a7704676048111b4f7ab24b95a904008
+	DEP_FFMPEG_TAG=release/4.4
+	LTNTSTOOLS_TAG=master
+	LIBLTNTSTOOLS_TAG=352dd774a9aecd894bbb98f24a39de553dd4fc42
+	LIBKLSCTE35_TAG=82dbcd1d540ed44ed1e421d708c8e2b1e5b64aa8
+	LIBKLVANC_TAG=vid.obe.1.6.0
 else
 	echo "Invalid argument"
 	exit 1
+fi
+
+if [ $BUILD_JSONC -eq 1 ]; then
+        if [ ! -d json-c ]; then
+                git clone https://github.com/json-c/json-c.git
+                cd json-c && git checkout $LIBJSONC_TAG && cd ..
+        fi
 fi
 
 # Unpack the DekTec SDK
@@ -201,6 +218,18 @@ if [ ! -d ltntstools ]; then
 	if [ "$LTNTSTOOLS_TAG" != "" ]; then
 		cd ltntstools && git checkout $LTNTSTOOLS_TAG && cd ..
 	fi
+fi
+
+if [ $BUILD_JSONC -eq 1 ]; then
+        pushd json-c
+                if [ ! -f .skip ]; then
+                        ./autogen.sh
+                        ./configure --prefix=$PWD/../target-root/usr --enable-shared=no
+                        make -j$JOBS
+                        make install
+                        touch .skip
+                fi
+        popd
 fi
 
 pushd srt
