@@ -9,6 +9,7 @@ DEP_LIBDVBPSI_TAG=
 DEP_FFMPEG_TAG=
 LIBKLSCTE35_TAG=
 LIBKLVANC_TAG=
+LIBNTT_TAG=
 LIBMEDIAINGO_TAG=v21.09
 BUILD_JSONC=1
 LIBJSONC_TAG=6c55f65d07a972dbd2d1668aab2e0056ccdd52fc
@@ -206,6 +207,13 @@ if [ ! -d libklscte35 ]; then
 	fi
 fi
 
+if [ ! -d libntt ]; then
+	git clone git@github.com:LTN-Global/libntt.git
+	if [ "$LIBNTT_TAG" != "" ]; then
+		cd libntt && git checkout $LIBNTT_TAG && cd ..
+	fi
+fi
+
 if [ ! -d libltntstools ]; then
 	git clone https://github.com/LTNGlobal-opensource/libltntstools.git
 	if [ "$LIBLTNTSTOOLS_TAG" != "" ]; then
@@ -277,6 +285,13 @@ pushd libklscte35
 	make install
 popd
 
+pushd libntt
+	./autogen.sh --build
+	./configure --prefix=$PWD/../target-root/usr
+	make -j$JOBS
+	make install
+popd
+
 pushd ffmpeg
 	export CFLAGS="-I$PWD/../target-root/usr/include"
 	export LDFLAGS="-L$PWD/../target-root/usr/lib -L$PWD/../target-root/usr/lib64 -lcrypto -lm -lsrt"
@@ -301,7 +316,7 @@ pushd ltntstools
 	export CFLAGS="-I$PWD/../target-root/usr/include"
 	export LDFLAGS="-L$PWD/../target-root/usr/lib -L$PWD/../target-root/usr/lib64"
 	./autogen.sh --build
-	./configure --prefix=$PWD/../target-root/usr --enable-shared=no
+	./configure --prefix=$PWD/../target-root/usr --enable-shared=no --enable-ntt=yes
 	make -j$JOBS
 	make install
 popd
