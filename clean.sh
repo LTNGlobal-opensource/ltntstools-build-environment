@@ -8,3 +8,4 @@ rm -rf libltntstools libklscte35 libklvanc
 rm -rf sdk-nielsen
 rm -rf srt
 rm -rf MediaInfoLib
+rm -rf libntt
