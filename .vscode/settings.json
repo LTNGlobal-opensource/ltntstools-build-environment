@@ -62,6 +62,7 @@
         "**/src/tstools_asi2ip": true,
         "**/src/tstools_srt_transmit": true,
         "**/src/tstools_smpte2038_inspector": true,
+        "**/src/tstools_ntt_inspector": true,
     },
     "files.associations": {
         "*h*h*h*hfunctional": "cpp",
