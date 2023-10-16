@@ -296,7 +296,7 @@ if [ ! -d libklscte35 ]; then
 fi
 
 if [ ! -d libntt ]; then
-	git clone git@github.com:LTN-Global/libntt.git
+	git clone git@git.ltnglobal.com:video/libntt.git
 	if [ "$LIBNTT_TAG" != "" ]; then
 		cd libntt && git checkout $LIBNTT_TAG && cd ..
 	fi
