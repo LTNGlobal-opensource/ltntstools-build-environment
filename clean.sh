@@ -9,3 +9,4 @@ rm -rf sdk-nielsen
 rm -rf srt
 rm -rf MediaInfoLib
 rm -rf libntt
+rm -rf json-c
