@@ -405,6 +405,7 @@ pushd ffmpeg
 	export PKG_CONFIG_PATH="$PWD/../target-root/usr/lib64/pkgconfig"
 	./configure --prefix=$PWD/../target-root/usr --disable-iconv --enable-static \
 		--disable-audiotoolbox --disable-videotoolbox --disable-avfoundation \
+		--disable-vaapi --disable-vdpau \
 		--enable-libsrt --pkg-config-flags="--static"
 	make -j$JOBS
 	make install
