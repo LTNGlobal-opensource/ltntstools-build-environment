@@ -221,6 +221,14 @@ elif [ "$1" == "v1.29.0" ]; then
 	LIBLTNTSTOOLS_TAG=bad6c2b09ea4523380615a44ac550bce8ee9e86a
 	LIBKLSCTE35_TAG=82dbcd1d540ed44ed1e421d708c8e2b1e5b64aa8
 	LIBKLVANC_TAG=vid.obe.1.6.0
+elif [ "$1" == "v1.30.0" ]; then
+	DEP_BITSTREAM_TAG=20ce4345061499abc0389e9cd837665a62ad6add
+	DEP_LIBDVBPSI_TAG=d2a81c20a7704676048111b4f7ab24b95a904008
+	DEP_FFMPEG_TAG=release/4.4
+	LTNTSTOOLS_TAG=v1.30.0
+	LIBLTNTSTOOLS_TAG=4252c52d67ad7d73d14988d0ea3bd72a362cddd2
+	LIBKLSCTE35_TAG=82dbcd1d540ed44ed1e421d708c8e2b1e5b64aa8
+	LIBKLVANC_TAG=vid.obe.1.6.0
 else
 	echo "Invalid argument"
 	exit 1
@@ -285,7 +293,10 @@ fi
 if [ ! -d ffmpeg ]; then
 	git clone https://git.ffmpeg.org/ffmpeg.git
 	if [ "$DEP_FFMPEG_TAG" != "" ]; then
-		cd ffmpeg && git checkout $DEP_FFMPEG_TAG && cd ..
+		cd ffmpeg
+		git checkout $DEP_FFMPEG_TAG
+		patch -p1 <../0001-ffmpeg.patch
+		cd ..
 	fi
 fi
 
