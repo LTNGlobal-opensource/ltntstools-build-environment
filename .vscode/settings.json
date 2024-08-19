@@ -1,6 +1,5 @@
 // Place your settings in this file to overwrite default and user settings.
 {
-
     // Configure glob patterns for excluding files and folders.
     "files.watcherExclude": {
         "**/.git/objects/**": true,
@@ -73,5 +72,6 @@
         "limits": "cpp",
         "type_traits": "cpp",
         "utility": "cpp"
-    }
+    },
+    "editor.formatOnSave": false
 }
