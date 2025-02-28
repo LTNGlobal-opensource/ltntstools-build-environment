@@ -13,6 +13,7 @@ LIBNTT_TAG=
 LIBMEDIAINGO_TAG=v21.09
 BUILD_JSONC=1
 LIBJSONC_TAG=6c55f65d07a972dbd2d1668aab2e0056ccdd52fc
+LIBZVBI_TAG=e62d905e00cdd1d6d4333ead90fb5b44bfb49371
 [ -z "$BUILD_NTT" ] && BUILD_NTT=1
 
 if [ "$1" == "" ]; then
@@ -254,6 +255,14 @@ elif [ "$1" == "v1.33.1" ]; then
 	LIBLTNTSTOOLS_TAG=a23f5215df4fc1831ef267aadf1ac71db7f99277
 	LIBKLSCTE35_TAG=82dbcd1d540ed44ed1e421d708c8e2b1e5b64aa8
 	LIBKLVANC_TAG=vid.obe.1.6.0
+elif [ "$1" == "v1.34.1-dev" ]; then
+	DEP_BITSTREAM_TAG=20ce4345061499abc0389e9cd837665a62ad6add
+	DEP_LIBDVBPSI_TAG=d2a81c20a7704676048111b4f7ab24b95a904008
+	DEP_FFMPEG_TAG=release/4.4
+	LTNTSTOOLS_TAG=v1.33.1
+	LIBLTNTSTOOLS_TAG=359141d0cf14887149a2f1654f013db7ce984fba
+	LIBKLSCTE35_TAG=348bdd7432ce9d65cbd28c3578a03fa23df9fea1
+	LIBKLVANC_TAG=vid.obe.1.6.0
 else
 	echo "Invalid argument"
 	exit 1
@@ -263,6 +272,16 @@ if [ $BUILD_JSONC -eq 1 ]; then
         if [ ! -d json-c ]; then
                 git clone https://github.com/json-c/json-c.git
                 cd json-c && git checkout $LIBJSONC_TAG && cd ..
+        fi
+fi
+
+if [ ! -d libzvbi ]; then
+        git clone https://github.com/LTNGlobal-opensource/libzvbi.git
+        if [ "$LIBZVBI_TAG" != "" ]; then
+                cd libzvbi
+                git checkout $LIBZVBI_TAG
+                patch -p1 <../0000-libzvbi-remove-png-dep.patch
+                cd ..
         fi
 fi
 
@@ -373,6 +392,12 @@ if [ $BUILD_JSONC -eq 1 ]; then
                 fi
         popd
 fi
+
+pushd libzvbi
+	./configure --prefix=$PWD/../target-root/usr --enable-shared=no
+	make -j$JOBS
+	make install
+popd
 
 pushd srt
 	./configure --enable-static=ON --enable-shared=OFF --prefix=$PWD/../target-root/usr
