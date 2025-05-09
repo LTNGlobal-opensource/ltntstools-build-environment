@@ -10,3 +10,6 @@ rm -rf srt
 rm -rf MediaInfoLib
 rm -rf libntt
 rm -rf json-c
+rm -rf openssl
+rm -rf librdkafka
+rm -rf libzvbi
