@@ -12,6 +12,10 @@ LIBKLVANC_TAG=
 LIBNTT_TAG=
 LIBMEDIAINGO_TAG=v21.09
 BUILD_JSONC=1
+BUILD_LIBOPENSSL=0
+BUILD_LIBRDKAFKA=0
+LIBRDKAFKA_TAG=57c56c5f8f0b5d2bdb6e64af2683fc22beb6c434
+LIBOPENSSL_TAG=5810149e6566564a790bd6d3279159528015f915
 LIBJSONC_TAG=6c55f65d07a972dbd2d1668aab2e0056ccdd52fc
 LIBZVBI_TAG=e62d905e00cdd1d6d4333ead90fb5b44bfb49371
 [ -z "$BUILD_NTT" ] && BUILD_NTT=1
@@ -263,9 +267,41 @@ elif [ "$1" == "v1.34.1" ]; then
 	LIBLTNTSTOOLS_TAG=761080185e8213be4c134b91831823b1049263a0
 	LIBKLSCTE35_TAG=348bdd7432ce9d65cbd28c3578a03fa23df9fea1
 	LIBKLVANC_TAG=vid.obe.1.6.0
+elif [ "$1" == "v1.35.1-dev" ]; then
+	DEP_BITSTREAM_TAG=20ce4345061499abc0389e9cd837665a62ad6add
+	DEP_LIBDVBPSI_TAG=d2a81c20a7704676048111b4f7ab24b95a904008
+	DEP_FFMPEG_TAG=release/4.4
+	LTNTSTOOLS_TAG=master
+	LIBLTNTSTOOLS_TAG=pechanges-1
+	LIBKLSCTE35_TAG=348bdd7432ce9d65cbd28c3578a03fa23df9fea1
+	LIBKLVANC_TAG=vid.obe.1.6.0
 else
 	echo "Invalid argument"
 	exit 1
+fi
+
+if [ "`uname -o`" == "Darwin" ]; then
+	BUILD_LIBOPENSSL=1
+	JOBS=16
+	DEP_BITSTREAM_TAG=fc71ca6d9da88e82ada96588ebf2e121cd3ad583
+	BUILD_NTT=0
+	BUILD_LIBRDKAFKA=1
+fi
+
+if [ $BUILD_LIBRDKAFKA -eq 1 ]; then
+        if [ ! -d librdkafka ]; then
+		git clone https://github.com/confluentinc/librdkafka.git
+		cd librdkafka && git checkout $LIBRDKAFKA_TAG && cd ..
+	fi
+
+fi
+
+if [ $BUILD_LIBOPENSSL -eq 1 ]; then
+        if [ ! -d openssl ]; then
+		git clone https://github.com/openssl/openssl.git
+		cd openssl && git checkout $LIBOPENSSL_TAG && cd ..
+	fi
+
 fi
 
 if [ $BUILD_JSONC -eq 1 ]; then
@@ -307,7 +343,9 @@ fi
 
 if [ ! -d srt ]; then
 	git clone https://github.com/Haivision/srt.git
-	cd srt && git checkout v1.4.4 -b build && cd ..
+	cd srt && git checkout v1.4.4 -b build
+	patch -p1 <../0002-srt-cmake.patch
+	cd ..
 fi
 
 if [ ! -d MediaInfoLib ]; then
@@ -381,6 +419,28 @@ if [ ! -d ltntstools ]; then
 	fi
 fi
 
+if [ $BUILD_LIBOPENSSL -eq 1 ]; then
+        pushd openssl
+                if [ ! -f .skip ]; then
+			./Configure --prefix=$PWD/../target-root/usr no-shared no-docs
+                        make -j$JOBS
+                        make install
+                        touch .skip
+		fi
+        popd
+fi
+
+if [ $BUILD_LIBRDKAFKA -eq 1 ]; then
+        pushd librdkafka
+		if [ ! -f .skip ]; then
+			./configure --prefix=$PWD/../target-root/usr --disable-shared
+			make -j$JOBS
+			make install
+			touch .skip
+		fi
+        popd
+fi
+
 if [ $BUILD_JSONC -eq 1 ]; then
         pushd json-c
                 if [ ! -f .skip ]; then
@@ -394,22 +454,31 @@ if [ $BUILD_JSONC -eq 1 ]; then
 fi
 
 pushd libzvbi
+  if [ ! -f .skip ]; then
 	./configure --prefix=$PWD/../target-root/usr --enable-shared=no
 	make -j$JOBS
 	make install
+	touch .skip
+  fi
 popd
 
 pushd srt
+  if [ ! -f .skip ]; then
 	./configure --enable-static=ON --enable-shared=OFF --prefix=$PWD/../target-root/usr
 	make -j8
 	make install
+	touch .skip
+  fi
 popd
 
 pushd MediaInfoLib/Project/GNU/Library
+  if [ ! -f .skip ]; then
 	./autogen.sh
 	./configure --enable-shared=no --enable-static=yes --prefix=$PWD/../../../../target-root/usr
 	make -j$JOBS
 	make install
+	touch .skip
+  fi
 popd
 
 pushd bitstream
@@ -418,30 +487,39 @@ pushd bitstream
 popd
 
 pushd libdvbpsi
+  if [ ! -f .skip ]; then
 	export CFLAGS="-I$PWD/../target-root/usr/include"
 	export LDFLAGS="-L$PWD/../target-root/usr/lib"
 	./bootstrap
 	./configure --prefix=$PWD/../target-root/usr --enable-shared=no
 	make -j$JOBS
 	make install
+	touch .skip
+  fi
 popd
 
 pushd libklvanc
+  if [ ! -f .skip ]; then
 	export CFLAGS="-I$PWD/../target-root/usr/include"
 	export LDFLAGS="-L$PWD/../target-root/usr/lib"
 	./autogen.sh --build
 	./configure --prefix=$PWD/../target-root/usr --enable-shared=no
 	make -j$JOBS
 	make install
+	touch .skip
+  fi
 popd
 
 pushd libklscte35
+  if [ ! -f .skip ]; then
 	export CFLAGS="-I$PWD/../target-root/usr/include"
 	export LDFLAGS="-L$PWD/../target-root/usr/lib"
 	./autogen.sh --build
 	./configure --prefix=$PWD/../target-root/usr --enable-shared=no
 	make -j$JOBS
 	make install
+	touch .skip
+  fi
 popd
 
 if [ $BUILD_NTT -eq 1 ]; then
@@ -457,6 +535,7 @@ else
 fi
 
 pushd ffmpeg
+  if [ ! -f .skip ]; then
 	export CFLAGS="-I$PWD/../target-root/usr/include"
 	export LDFLAGS="-L$PWD/../target-root/usr/lib -L$PWD/../target-root/usr/lib64 -lcrypto -lm -lsrt"
 	export PKG_CONFIG_PATH="$PWD/../target-root/usr/lib64/pkgconfig"
@@ -464,8 +543,11 @@ pushd ffmpeg
 		--disable-audiotoolbox --disable-videotoolbox --disable-avfoundation \
 		--disable-vaapi --disable-vdpau \
 		--enable-libsrt --pkg-config-flags="--static"
+	# run this again for macos
 	make -j$JOBS
 	make install
+	touch .skip
+  fi
 popd
 
 pushd libltntstools
@@ -486,3 +568,4 @@ pushd ltntstools
 	make -j$JOBS
 	make install
 popd
+
