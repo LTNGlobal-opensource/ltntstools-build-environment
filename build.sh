@@ -54,6 +54,9 @@ elif [ "$1" == "--installdeps" ]; then
 	sudo yum -y install ncurses-devel
 	sudo yum -y install libzen-devel
 	sudo yum -y install librdkafka-devel
+	# OSX:
+	# brew install autoconf automake libtool
+	# cp /opt/homebrew/bin/glibtoolize /opt/homebrew/bin/libtoolize
 	exit 0
 elif [ "$1" == "v1.0.1" ]; then
 	DEP_BITSTREAM_TAG=20ce4345061499abc0389e9cd837665a62ad6add
