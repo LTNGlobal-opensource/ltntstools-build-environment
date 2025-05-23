@@ -542,10 +542,13 @@ popd
 if [ $BUILD_NTT -eq 1 ]; then
 	ENABLE_NTT=yes
 	pushd libntt
-		./autogen.sh --build
-		./configure --prefix=$PWD/../target-root/usr
-		make -j$JOBS
-		make install
+		if [ ! -f .skip ]; then
+			./autogen.sh --build
+			./configure --prefix=$PWD/../target-root/usr
+			make -j$JOBS
+			make install
+			touch .skip
+		fi
 	popd
 else
 	ENABLE_NTT=no
