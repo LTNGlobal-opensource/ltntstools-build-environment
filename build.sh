@@ -15,6 +15,7 @@ BUILD_JSONC=1
 BUILD_LIBOPENSSL=0
 BUILD_LIBRDKAFKA=0
 BUILD_MEDIAINFO=0
+BUILD_OPT_SHARED=no
 LIBRDKAFKA_TAG=57c56c5f8f0b5d2bdb6e64af2683fc22beb6c434
 LIBOPENSSL_TAG=5810149e6566564a790bd6d3279159528015f915
 LIBJSONC_TAG=6c55f65d07a972dbd2d1668aab2e0056ccdd52fc
@@ -294,6 +295,7 @@ elif [ "$1" == "v1.37.1-dev" ]; then
 	LIBKLSCTE35_TAG=vid.obe.1.4.0
 	LIBKLVANC_TAG=vid.obe.1.12.0
 	LIBNTT_TAG=9b4365fc44ce1edbc94325e4cddeadc504802ed9
+	BUILD_OPT_SHARED=yes
 else
 	echo "Invalid argument"
 	exit 1
@@ -469,7 +471,11 @@ if [ $BUILD_JSONC -eq 1 ]; then
         pushd json-c
                 if [ ! -f .skip ]; then
                         ./autogen.sh
-                        ./configure --prefix=$PWD/../target-root/usr --enable-shared=no
+			if [ "$BUILD_OPT_SHARED" == "no" ]; then
+                        	./configure --prefix=$PWD/../target-root/usr --enable-shared=no
+			else
+				./configure --prefix=$PWD/../target-root/usr --enable-shared --disable-static
+			fi
                         make -j$JOBS
                         make install
                         touch .skip
@@ -479,7 +485,11 @@ fi
 
 pushd libzvbi
   if [ ! -f .skip ]; then
-	./configure --prefix=$PWD/../target-root/usr --enable-shared=no
+	if [ "$BUILD_OPT_SHARED" == "no" ]; then
+		./configure --prefix=$PWD/../target-root/usr --enable-shared=no
+	else
+		./configure --prefix=$PWD/../target-root/usr --enable-shared --disable-static
+	fi
 	make -j$JOBS
 	make install
 	touch .skip
@@ -488,7 +498,11 @@ popd
 
 pushd srt
   if [ ! -f .skip ]; then
-	./configure --enable-static=ON --enable-shared=OFF --prefix=$PWD/../target-root/usr
+	if [ "$BUILD_OPT_SHARED" == "no" ]; then
+		./configure --enable-static=ON --enable-shared=OFF --prefix=$PWD/../target-root/usr
+	else
+		./configure --enable-static=OFF --enable-shared=ON --prefix=$PWD/../target-root/usr
+	fi
 	make -j8
 	make install
 	touch .skip
@@ -517,7 +531,11 @@ pushd libdvbpsi
 	export CFLAGS="-I$PWD/../target-root/usr/include"
 	export LDFLAGS="-L$PWD/../target-root/usr/lib"
 	./bootstrap
-	./configure --prefix=$PWD/../target-root/usr --enable-shared=no
+	if [ "$BUILD_OPT_SHARED" == "no" ]; then
+		./configure --prefix=$PWD/../target-root/usr --enable-shared=no
+	else
+		./configure --prefix=$PWD/../target-root/usr --enable-shared --disable-static
+	fi
 	make -j$JOBS
 	make install
 	touch .skip
@@ -529,7 +547,11 @@ pushd libklvanc
 	export CFLAGS="-I$PWD/../target-root/usr/include"
 	export LDFLAGS="-L$PWD/../target-root/usr/lib"
 	./autogen.sh --build
-	./configure --prefix=$PWD/../target-root/usr --enable-shared=no
+	if [ "$BUILD_OPT_SHARED" == "no" ]; then
+		./configure --prefix=$PWD/../target-root/usr --enable-shared=no
+	else
+		./configure --prefix=$PWD/../target-root/usr --enable-shared --disable-static
+	fi
 	make -j$JOBS
 	make install
 	touch .skip
@@ -541,7 +563,11 @@ pushd libklscte35
 	export CFLAGS="-I$PWD/../target-root/usr/include"
 	export LDFLAGS="-L$PWD/../target-root/usr/lib"
 	./autogen.sh --build
-	./configure --prefix=$PWD/../target-root/usr --enable-shared=no
+	if [ "$BUILD_OPT_SHARED" == "no" ]; then
+		./configure --prefix=$PWD/../target-root/usr --enable-shared=no
+	else
+		./configure --prefix=$PWD/../target-root/usr --enable-shared --disable-static
+	fi
 	make -j$JOBS
 	make install
 	touch .skip
@@ -553,7 +579,11 @@ if [ $BUILD_NTT -eq 1 ]; then
 	pushd libntt
 		if [ ! -f .skip ]; then
 			./autogen.sh --build
-			./configure --prefix=$PWD/../target-root/usr
+			if [ "$BUILD_OPT_SHARED" == "no" ]; then
+				./configure --prefix=$PWD/../target-root/usr
+			else
+				./configure --prefix=$PWD/../target-root/usr --enable-shared --disable-static
+			fi
 			make -j$JOBS
 			make install
 			touch .skip
@@ -565,13 +595,21 @@ fi
 
 pushd ffmpeg
   if [ ! -f .skip ]; then
-	export CFLAGS="-I$PWD/../target-root/usr/include"
-	export LDFLAGS="-L$PWD/../target-root/usr/lib -L$PWD/../target-root/usr/lib64 -lcrypto -lm -lsrt"
-	export PKG_CONFIG_PATH="$PWD/../target-root/usr/lib64/pkgconfig"
-	./configure --prefix=$PWD/../target-root/usr --disable-iconv --enable-static \
-		--disable-audiotoolbox --disable-videotoolbox --disable-avfoundation \
-		--disable-vaapi --disable-vdpau \
-		--enable-libsrt --pkg-config-flags="--static"
+	if [ "$BUILD_OPT_SHARED" == "no" ]; then
+		export CFLAGS="-I$PWD/../target-root/usr/include"
+		export LDFLAGS="-L$PWD/../target-root/usr/lib -L$PWD/../target-root/usr/lib64 -lcrypto -lm -lsrt"
+		export PKG_CONFIG_PATH="$PWD/../target-root/usr/lib64/pkgconfig"
+		./configure --prefix=$PWD/../target-root/usr --disable-iconv --enable-static \
+			--disable-audiotoolbox --disable-videotoolbox --disable-avfoundation \
+			--disable-vaapi --disable-vdpau \
+			--enable-libsrt --pkg-config-flags="--static"
+	else
+		export PKG_CONFIG_PATH="$PWD/../target-root/usr/lib/pkgconfig:$PWD/../target-root/usr/lib64/pkgconfig"
+		./configure --prefix=$PWD/../target-root/usr --disable-iconv --enable-static \
+			--disable-audiotoolbox --disable-videotoolbox --disable-avfoundation \
+			--disable-vaapi --disable-vdpau \
+			--enable-libsrt --enable-shared --disable-static
+	fi
 	# run this again for macos
 	make -j$JOBS
 	make install
@@ -580,20 +618,32 @@ pushd ffmpeg
 popd
 
 pushd libltntstools
+  if [ ! -f .skip ]; then
 	export CFLAGS="-I$PWD/../target-root/usr/include $NIELSEN_INC"
 	export CPPFLAGS="-I$PWD/../target-root/usr/include $NIELSEN_INC"
 	export LDFLAGS="-L$PWD/../target-root/usr/lib $NIELSEN_LIB"
 	./autogen.sh --build
-	./configure --prefix=$PWD/../target-root/usr --enable-shared=no
+	if [ "$BUILD_OPT_SHARED" == "no" ]; then
+		./configure --prefix=$PWD/../target-root/usr --enable-shared=no
+	else
+		./configure --prefix=$PWD/../target-root/usr --enable-shared --disable-static
+	fi
 	make -j$JOBS
 	make install
+	touch .skip
+  fi
 popd
 
 pushd ltntstools
 	export CFLAGS="-I$PWD/../target-root/usr/include"
 	export LDFLAGS="-L$PWD/../target-root/usr/lib -L$PWD/../target-root/usr/lib64"
 	./autogen.sh --build
-	./configure --prefix=$PWD/../target-root/usr --enable-shared=no --enable-ntt=$ENABLE_NTT
+	if [ "$BUILD_OPT_SHARED" == "no" ]; then
+		./configure --prefix=$PWD/../target-root/usr --enable-shared=no --enable-ntt=$ENABLE_NTT
+	else
+		export PKG_CONFIG_PATH="$PWD/../target-root/usr/lib/pkgconfig:$PWD/../target-root/usr/lib64/pkgconfig"
+		./configure --prefix=$PWD/../target-root/usr --enable-shared --disable-static --enable-ntt=$ENABLE_NTT
+	fi
 	make -j$JOBS
 	make install
 popd
