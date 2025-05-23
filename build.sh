@@ -14,6 +14,7 @@ LIBMEDIAINGO_TAG=v21.09
 BUILD_JSONC=1
 BUILD_LIBOPENSSL=0
 BUILD_LIBRDKAFKA=0
+BUILD_MEDIAINFO=0
 LIBRDKAFKA_TAG=57c56c5f8f0b5d2bdb6e64af2683fc22beb6c434
 LIBOPENSSL_TAG=5810149e6566564a790bd6d3279159528015f915
 LIBJSONC_TAG=6c55f65d07a972dbd2d1668aab2e0056ccdd52fc
@@ -276,11 +277,11 @@ elif [ "$1" == "v1.34.1" ]; then
 	LIBLTNTSTOOLS_TAG=761080185e8213be4c134b91831823b1049263a0
 	LIBKLSCTE35_TAG=348bdd7432ce9d65cbd28c3578a03fa23df9fea1
 	LIBKLVANC_TAG=vid.obe.1.6.0
-elif [ "$1" == "v1.36.3" ]; then
+elif [ "$1" == "v1.36.4" ]; then
 	DEP_BITSTREAM_TAG=20ce4345061499abc0389e9cd837665a62ad6add
 	DEP_LIBDVBPSI_TAG=d2a81c20a7704676048111b4f7ab24b95a904008
 	DEP_FFMPEG_TAG=release/4.4
-	LTNTSTOOLS_TAG=v1.36.3
+	LTNTSTOOLS_TAG=v1.36.4
 	LIBLTNTSTOOLS_TAG=937c14e224920c7862231370d8228703101b1352
 	LIBKLSCTE35_TAG=348bdd7432ce9d65cbd28c3578a03fa23df9fea1
 	LIBKLVANC_TAG=vid.obe.1.6.0
@@ -357,10 +358,12 @@ if [ ! -d srt ]; then
 	cd ..
 fi
 
-if [ ! -d MediaInfoLib ]; then
-	git clone https://github.com/MediaArea/MediaInfoLib.git
-	if [ "$LIBMEDIAINGO_TAG" != "" ]; then
-		cd MediaInfoLib && git checkout $LIBMEDIAINGO_TAG && cd ..
+if [ $BUILD_MEDIAINFO -eq 1 ]; then
+	if [ ! -d MediaInfoLib ]; then
+		git clone https://github.com/MediaArea/MediaInfoLib.git
+		if [ "$LIBMEDIAINGO_TAG" != "" ]; then
+			cd MediaInfoLib && git checkout $LIBMEDIAINGO_TAG && cd ..
+		fi
 	fi
 fi
 
@@ -480,15 +483,17 @@ pushd srt
   fi
 popd
 
-pushd MediaInfoLib/Project/GNU/Library
-  if [ ! -f .skip ]; then
-	./autogen.sh
-	./configure --enable-shared=no --enable-static=yes --prefix=$PWD/../../../../target-root/usr
-	make -j$JOBS
-	make install
-	touch .skip
-  fi
-popd
+if [ $BUILD_MEDIAINFO -eq 1 ]; then
+	pushd MediaInfoLib/Project/GNU/Library
+		if [ ! -f .skip ]; then
+			./autogen.sh
+			./configure --enable-shared=no --enable-static=yes --prefix=$PWD/../../../../target-root/usr
+			make -j$JOBS
+			make install
+			touch .skip
+		fi
+	popd
+fi
 
 pushd bitstream
 	make PREFIX=$PWD/../target-root/usr
