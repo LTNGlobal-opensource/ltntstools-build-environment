@@ -355,6 +355,9 @@ if [ ! -d srt ]; then
 	git clone https://github.com/Haivision/srt.git
 	cd srt && git checkout v1.4.4 -b build
 	patch -p1 <../0002-srt-cmake.patch
+	if [ "`uname -o`" == "Darwin" ]; then
+		patch -p1 <../0003-srt-cmake-darwin.patch
+	fi
 	cd ..
 fi
 
