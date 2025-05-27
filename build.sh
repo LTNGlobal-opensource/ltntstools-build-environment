@@ -16,6 +16,7 @@ BUILD_LIBOPENSSL=0
 BUILD_LIBRDKAFKA=0
 BUILD_MEDIAINFO=0
 BUILD_OPT_SHARED=no
+BUILD_OPT_SRT=
 LIBRDKAFKA_TAG=57c56c5f8f0b5d2bdb6e64af2683fc22beb6c434
 LIBOPENSSL_TAG=5810149e6566564a790bd6d3279159528015f915
 LIBJSONC_TAG=6c55f65d07a972dbd2d1668aab2e0056ccdd52fc
@@ -296,7 +297,8 @@ elif [ "$1" == "v1.37.1-dev" ]; then
 	LIBKLSCTE35_TAG=vid.obe.1.4.0
 	LIBKLVANC_TAG=vid.obe.1.12.0
 	LIBNTT_TAG=9b4365fc44ce1edbc94325e4cddeadc504802ed9
-	BUILD_OPT_SHARED=yes
+#	BUILD_OPT_SHARED=yes
+	BUILD_OPT_SRT=--enable-debug=2
 else
 	echo "Invalid argument"
 	exit 1
@@ -500,9 +502,9 @@ popd
 pushd srt
   if [ ! -f .skip ]; then
 	if [ "$BUILD_OPT_SHARED" == "no" ]; then
-		./configure --enable-static=ON --enable-shared=OFF --prefix=$PWD/../target-root/usr
+		./configure --enable-static=ON --enable-shared=OFF --prefix=$PWD/../target-root/usr $BUILD_OPT_SRT
 	else
-		./configure --enable-static=OFF --enable-shared=ON --prefix=$PWD/../target-root/usr
+		./configure --enable-static=OFF --enable-shared=ON --prefix=$PWD/../target-root/usr $BUILD_OPT_SRT
 	fi
 	make -j8
 	make install
