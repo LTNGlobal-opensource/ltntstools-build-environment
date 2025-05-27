@@ -56,6 +56,7 @@ elif [ "$1" == "--installdeps" ]; then
 	sudo yum -y install ncurses-devel
 	sudo yum -y install libzen-devel
 	sudo yum -y install librdkafka-devel
+	sudo yum -y install json-c-devel
 	# OSX:
 	# brew install autoconf automake libtool
 	# cp /opt/homebrew/bin/glibtoolize /opt/homebrew/bin/libtoolize
