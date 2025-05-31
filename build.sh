@@ -640,8 +640,8 @@ pushd libltntstools
 popd
 
 pushd ltntstools
-	export CFLAGS="-I$PWD/../target-root/usr/include"
-	export LDFLAGS="-L$PWD/../target-root/usr/lib -L$PWD/../target-root/usr/lib64"
+	export CFLAGS="-I$PWD/../target-root/usr/include $NIELSEN_INC"
+	export LDFLAGS="-L$PWD/../target-root/usr/lib -L$PWD/../target-root/usr/lib64 $NIELSEN_LIB"
 	./autogen.sh --build
 	if [ "$BUILD_OPT_SHARED" == "no" ]; then
 		./configure --prefix=$PWD/../target-root/usr --enable-shared=no --enable-ntt=$ENABLE_NTT
