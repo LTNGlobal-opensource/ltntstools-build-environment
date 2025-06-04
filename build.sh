@@ -290,6 +290,20 @@ elif [ "$1" == "v1.36.4" ]; then
 	LIBLTNTSTOOLS_TAG=937c14e224920c7862231370d8228703101b1352
 	LIBKLSCTE35_TAG=348bdd7432ce9d65cbd28c3578a03fa23df9fea1
 	LIBKLVANC_TAG=vid.obe.1.6.0
+elif [ "$1" == "v1.37.0" ]; then
+	# We never made a formal rpm out of this, it's a mid dev release
+	# that's frozen for other projects to use.
+	DEP_BITSTREAM_TAG=20ce4345061499abc0389e9cd837665a62ad6add
+	DEP_LIBDVBPSI_TAG=d2a81c20a7704676048111b4f7ab24b95a904008
+	DEP_FFMPEG_TAG=release/4.4
+	LTNTSTOOLS_TAG=v1.37.0
+	LIBLTNTSTOOLS_TAG=d9223dbee792695d4574a3838e2cebced18f4f64
+	LIBKLSCTE35_TAG=vid.obe.1.4.0
+	LIBKLVANC_TAG=vid.obe.1.12.0
+	LIBNTT_TAG=9b4365fc44ce1edbc94325e4cddeadc504802ed9
+	BUILD_OPT_SHARED=yes
+	BUILD_OPT_SRT=--enable-debug=2
+	BUILD_OPT_LIBDVBPSI=--enable-debug
 elif [ "$1" == "v1.37.1-dev" ]; then
 	DEP_BITSTREAM_TAG=20ce4345061499abc0389e9cd837665a62ad6add
 	DEP_LIBDVBPSI_TAG=d2a81c20a7704676048111b4f7ab24b95a904008
