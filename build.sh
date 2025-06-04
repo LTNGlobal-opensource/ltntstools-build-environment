@@ -642,6 +642,7 @@ popd
 
 pushd ltntstools
 	export CFLAGS="-I$PWD/../target-root/usr/include $NIELSEN_INC"
+	export CPPFLAGS="-I$PWD/../target-root/usr/include $NIELSEN_INC"
 	export LDFLAGS="-L$PWD/../target-root/usr/lib -L$PWD/../target-root/usr/lib64 $NIELSEN_LIB"
 	./autogen.sh --build
 	if [ "$BUILD_OPT_SHARED" == "no" ]; then
