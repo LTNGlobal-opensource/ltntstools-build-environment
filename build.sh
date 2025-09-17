@@ -31,6 +31,10 @@ if [ "$1" == "" ]; then
 	DEP_LIBDVBPSI_TAG=d2a81c20a7704676048111b4f7ab24b95a904008
 	DEP_FFMPEG_TAG=release/4.4
 	LTNTSTOOLS_TAG=master
+elif [ "$1" == "--fix-urls-to-dev" ]; then
+	perl -spi -e 's!https://github.com/LTNGlobal-opensource!git@github.com:LTNGlobal-opensource!g' libltntstools/.git/config
+	perl -spi -e 's!https://github.com/LTNGlobal-opensource!git@github.com:LTNGlobal-opensource!g' ltntstools/.git/config
+	exit 0
 elif [ "$1" == "--create-docker-builder" ]; then
 	docker build --network=host -f Dockerfile.builder -t ltntstools-builder .
 	#docker run --name tmp -it --net=host -t ltntstools-builder --name tmp --entry-point /src/build.sh
