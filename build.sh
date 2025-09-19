@@ -334,6 +334,18 @@ elif [ "$1" == "v1.38.5" ]; then
 	BUILD_OPT_SHARED=yes
 	BUILD_OPT_SRT=--enable-debug=2
 	BUILD_OPT_LIBDVBPSI=--enable-debug
+elif [ "$1" == "v1.38.6" ]; then
+	DEP_BITSTREAM_TAG=20ce4345061499abc0389e9cd837665a62ad6add
+	DEP_LIBDVBPSI_TAG=d2a81c20a7704676048111b4f7ab24b95a904008
+	DEP_FFMPEG_TAG=release/4.4
+	LTNTSTOOLS_TAG=v1.38.6
+	LIBLTNTSTOOLS_TAG=6ff1b084b28aacf46806cb9e9bc355b99bad1326
+	LIBKLSCTE35_TAG=vid.obe.1.4.0
+	LIBKLVANC_TAG=vid.obe.1.12.0
+	LIBNTT_TAG=9b4365fc44ce1edbc94325e4cddeadc504802ed9
+	BUILD_OPT_SHARED=yes
+	BUILD_OPT_SRT=--enable-debug=2
+	BUILD_OPT_LIBDVBPSI=--enable-debug
 else
 	echo "Invalid argument"
 	exit 1
