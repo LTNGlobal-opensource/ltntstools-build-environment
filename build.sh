@@ -346,7 +346,20 @@ elif [ "$1" == "v1.38.6" ]; then
 	BUILD_OPT_SHARED=yes
 	BUILD_OPT_SRT=--enable-debug=2
 	BUILD_OPT_LIBDVBPSI=--enable-debug
-elif [ "$1" == "v1.38.7" ]; then
+elif [ "$1" == "fcbuild" ]; then
+	DEP_BITSTREAM_TAG=20ce4345061499abc0389e9cd837665a62ad6add
+	DEP_LIBDVBPSI_TAG=d2a81c20a7704676048111b4f7ab24b95a904008
+	DEP_FFMPEG_TAG=release/4.4
+	LTNTSTOOLS_TAG=v1.38.6
+	LIBLTNTSTOOLS_TAG=trchanges
+	LIBKLSCTE35_TAG=vid.obe.1.4.0
+	LIBKLVANC_TAG=vid.obe.1.12.0
+	LIBNTT_TAG=9b4365fc44ce1edbc94325e4cddeadc504802ed9
+	BUILD_OPT_SHARED=no
+	BUILD_OPT_SRT=--enable-debug=2
+	BUILD_OPT_LIBDVBPSI=--enable-debug
+	BUILD_NTT=0
+elif [ "$1" == "v1.38.7-dev" ]; then
 	DEP_BITSTREAM_TAG=20ce4345061499abc0389e9cd837665a62ad6add
 	DEP_LIBDVBPSI_TAG=d2a81c20a7704676048111b4f7ab24b95a904008
 	DEP_FFMPEG_TAG=release/4.4
@@ -412,7 +425,7 @@ if [ ! -d sdk-dektec/LinuxSDK ]; then
 fi
 
 # Unpack the nielsen SDK, if it's available.
-NIELSEN_SDK=/storage/dev/NIELSEN/DecoderSdkMonitor_v1.4_Linux.tgz
+NIELSEN_SDK=$PWD/NIELSEN/DecoderSdkMonitor_v1.4_Linux.tgz
 if [ -f $NIELSEN_SDK ]; then
 	if [ ! -d sdk-nielsen ]; then
 		mkdir -p sdk-nielsen
@@ -695,6 +708,11 @@ pushd libltntstools
 	touch .skip
   fi
 popd
+
+if [ "$1" == "fcbuild" ]; then
+	echo "Core library built. Terminating"
+	exit 0
+fi
 
 pushd ltntstools
 	export CFLAGS="-I$PWD/../target-root/usr/include $NIELSEN_INC"
