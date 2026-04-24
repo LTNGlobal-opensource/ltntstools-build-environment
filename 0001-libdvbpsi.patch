@@ -1,0 +1,13 @@
+diff --git a/misc/test_dr.h b/misc/test_dr.h
+index 52418b4..153609e 100644
+--- a/misc/test_dr.h
++++ b/misc/test_dr.h
+@@ -103,7 +103,7 @@
+ 
+ #define BOZO_end_boolean(name)                                          \
+       s_decoded.name += 12;                                             \
+-    } while(!i_err && (s_decoded.name <= 12));                          \
++    } while(!i_err && ((int)s_decoded.name <= 12));                          \
+     fprintf(stdout, "\r  iteration count: %22"PRI64d, i_loop_count);       \
+     if(i_err)                                                           \
+       fprintf(stdout, "    FAILED !!!\n");                              \

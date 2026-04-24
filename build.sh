@@ -505,6 +505,7 @@ if [ ! -d libdvbpsi ]; then
 		cd libdvbpsi
 		git checkout $DEP_LIBDVBPSI_TAG
 		patch -p1 <../0000-libdvbpsi.patch
+		patch -p1 <../0001-libdvbpsi.patch
 		cd ..
 	fi
 fi
