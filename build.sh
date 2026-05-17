@@ -520,6 +520,7 @@ if [ ! -d ffmpeg ]; then
 		cd ffmpeg
 		git checkout $DEP_FFMPEG_TAG
 		patch -p1 <../0001-ffmpeg.patch
+		patch -p1 <../0002-ffmpeg.patch
 		cd ..
 	fi
 fi
