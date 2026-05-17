@@ -439,7 +439,10 @@ fi
 if [ $BUILD_JSONC -eq 1 ]; then
         if [ ! -d json-c ]; then
                 git clone https://github.com/json-c/json-c.git
-                cd json-c && git checkout $LIBJSONC_TAG && cd ..
+                cd json-c
+		git checkout $LIBJSONC_TAG
+		patch -p1 <../0000-libjsonc.patch
+		cd ..
         fi
 fi
 
@@ -506,6 +509,7 @@ if [ ! -d libdvbpsi ]; then
 		git checkout $DEP_LIBDVBPSI_TAG
 		patch -p1 <../0000-libdvbpsi.patch
 		patch -p1 <../0001-libdvbpsi.patch
+		patch -p1 <../0002-libdvbpsi.patch
 		cd ..
 	fi
 fi
