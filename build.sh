@@ -2,6 +2,8 @@
 
 JOBS=8
 
+GITHUB_PREFIX=https://github.com/LTNGlobal-opensource
+
 LIBLTNTSTOOLS_TAG=
 LTNTSTOOLS_TAG=
 DEP_BITSTREAM_TAG=
@@ -407,6 +409,20 @@ elif [ "$1" == "v1.38.7-dev" ]; then
 	BUILD_OPT_SHARED=yes
 	BUILD_OPT_SRT=--enable-debug=2
 	BUILD_OPT_LIBDVBPSI=--enable-debug
+elif [ "$1" == "stoth-dev" ]; then
+	DEP_BITSTREAM_TAG=20ce4345061499abc0389e9cd837665a62ad6add
+	DEP_LIBDVBPSI_TAG=d2a81c20a7704676048111b4f7ab24b95a904008
+	DEP_FFMPEG_TAG=release/4.4
+	LTNTSTOOLS_TAG=master
+	LIBLTNTSTOOLS_TAG=master
+	LIBKLSCTE35_TAG=master
+	LIBKLVANC_TAG=master
+	LIBNTT_TAG=9b4365fc44ce1edbc94325e4cddeadc504802ed9
+	BUILD_OPT_SHARED=yes
+	BUILD_OPT_SRT=--enable-debug=2
+	BUILD_OPT_LIBDVBPSI=--enable-debug
+	BUILD_NTT=0
+	GITHUB_PREFIX=git@github.com:stoth68000
 else
 	echo "Invalid argument"
 	exit 1
@@ -526,14 +542,14 @@ if [ ! -d ffmpeg ]; then
 fi
 
 if [ ! -d libklvanc ]; then
-	git clone https://github.com/LTNGlobal-opensource/libklvanc.git
+	git clone $GITHUB_PREFIX/libklvanc.git
 	if [ "$LIBKLVANC_TAG" != "" ]; then
 		cd libklvanc && git checkout $LIBKLVANC_TAG && cd ..
 	fi
 fi
 
 if [ ! -d libklscte35 ]; then
-	git clone https://github.com/LTNGlobal-opensource/libklscte35.git
+	git clone $GITHUB_PREFIX/libklscte35.git
 	if [ "$LIBKLSCTE35_TAG" != "" ]; then
 		cd libklscte35 && git checkout $LIBKLSCTE35_TAG && cd ..
 	fi
@@ -549,14 +565,14 @@ if [ $BUILD_NTT -eq 1 ]; then
 fi
 
 if [ ! -d libltntstools ]; then
-	git clone https://github.com/LTNGlobal-opensource/libltntstools.git
+	git clone $GITHUB_PREFIX/libltntstools.git
 	if [ "$LIBLTNTSTOOLS_TAG" != "" ]; then
 		cd libltntstools && git checkout $LIBLTNTSTOOLS_TAG && cd ..
 	fi
 fi
 
 if [ ! -d ltntstools ]; then
-	git clone https://github.com/LTNGlobal-opensource/ltntstools.git
+	git clone $GITHUB_PREFIX/ltntstools.git
 	if [ "$LTNTSTOOLS_TAG" != "" ]; then
 		cd ltntstools && git checkout $LTNTSTOOLS_TAG && cd ..
 	fi
