@@ -767,7 +767,7 @@ pushd ffmpeg
 	if [ "$BUILD_OPT_SHARED" == "no" ]; then
 		export CFLAGS="-I$PWD/../target-root/usr/include"
 		export LDFLAGS="-L$PWD/../target-root/usr/lib -L$PWD/../target-root/usr/lib64 -lcrypto -lm -lsrt"
-		export PKG_CONFIG_PATH="$PWD/../target-root/usr/lib64/pkgconfig"
+		export PKG_CONFIG_PATH="$PWD/../target-root/usr/lib64/pkgconfig:$PWD/../target-root/usr/lib/pkgconfig"
 		./configure --prefix=$PWD/../target-root/usr --disable-iconv --enable-static \
 			--disable-audiotoolbox --disable-videotoolbox --disable-avfoundation \
 			--disable-vaapi --disable-vdpau \
