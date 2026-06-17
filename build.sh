@@ -421,6 +421,19 @@ elif [ "$1" == "fcbuild" ]; then
 	BUILD_OPT_SRT=--enable-debug=2
 	BUILD_OPT_LIBDVBPSI=--enable-debug
 	BUILD_NTT=0
+elif [ "$1" == "fcbuild2" ]; then
+	DEP_BITSTREAM_TAG=20ce4345061499abc0389e9cd837665a62ad6add
+	DEP_LIBDVBPSI_TAG=d2a81c20a7704676048111b4f7ab24b95a904008
+	DEP_FFMPEG_TAG=release/4.4
+	LTNTSTOOLS_TAG=v1.38.6
+	LIBLTNTSTOOLS_TAG=f88de2062940c3646cf9014b250d3617f42c481e
+	LIBKLSCTE35_TAG=vid.obe.1.4.0
+	LIBKLVANC_TAG=vid.obe.1.12.0
+	LIBNTT_TAG=9b4365fc44ce1edbc94325e4cddeadc504802ed9
+	BUILD_OPT_SHARED=no
+	BUILD_OPT_SRT=--enable-debug=2
+	BUILD_OPT_LIBDVBPSI=--enable-debug
+	BUILD_NTT=0
 elif [ "$1" == "dev" ]; then
 	DEP_BITSTREAM_TAG=20ce4345061499abc0389e9cd837665a62ad6add
 	DEP_LIBDVBPSI_TAG=d2a81c20a7704676048111b4f7ab24b95a904008
@@ -470,6 +483,7 @@ if [ "`uname -o`" == "Darwin" ]; then
 	DEP_BITSTREAM_TAG=fc71ca6d9da88e82ada96588ebf2e121cd3ad583
 	BUILD_NTT=0
 	BUILD_LIBRDKAFKA=1
+	BUILD_OPT_SHARED=no
 fi
 
 if [ ! -d libdvbpsi ]; then
@@ -524,8 +538,7 @@ pushd libltntstools
   fi
 popd
 
-
-if [ "$1" == "fcbuild" ]; then
+if [[ "$1" == fcbuild* ]]; then
 	echo "Core library built. Terminating"
 	exit 0
 fi
