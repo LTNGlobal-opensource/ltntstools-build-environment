@@ -472,6 +472,64 @@ if [ "`uname -o`" == "Darwin" ]; then
 	BUILD_LIBRDKAFKA=1
 fi
 
+if [ ! -d libdvbpsi ]; then
+	git clone https://code.videolan.org/videolan/libdvbpsi.git
+	if [ "$DEP_LIBDVBPSI_TAG" != "" ]; then
+		cd libdvbpsi
+		git checkout $DEP_LIBDVBPSI_TAG
+		patch -p1 <../0000-libdvbpsi.patch
+		patch -p1 <../0001-libdvbpsi.patch
+		patch -p1 <../0002-libdvbpsi.patch
+		cd ..
+	fi
+fi
+
+if [ ! -d libltntstools ]; then
+	git clone $GITHUB_PREFIX/libltntstools.git
+	if [ "$LIBLTNTSTOOLS_TAG" != "" ]; then
+		cd libltntstools && git checkout $LIBLTNTSTOOLS_TAG && cd ..
+	fi
+fi
+
+pushd libdvbpsi
+  if [ ! -f .skip ]; then
+	export CFLAGS="-I$PWD/../target-root/usr/include"
+	export LDFLAGS="-L$PWD/../target-root/usr/lib"
+	./bootstrap
+	if [ "$BUILD_OPT_SHARED" == "no" ]; then
+		./configure --prefix=$PWD/../target-root/usr --enable-shared=no $BUILD_OPT_LIBDVBPSI
+	else
+		./configure --prefix=$PWD/../target-root/usr --enable-shared --disable-static $BUILD_OPT_LIBDVBPSI
+	fi
+	make -j$JOBS
+	make install
+	touch .skip
+  fi
+popd
+
+pushd libltntstools
+  if [ ! -f .skip ]; then
+	export CFLAGS="-I$PWD/../target-root/usr/include $NIELSEN_INC"
+	export CPPFLAGS="-I$PWD/../target-root/usr/include $NIELSEN_INC"
+	export LDFLAGS="-L$PWD/../target-root/usr/lib $NIELSEN_LIB"
+	./autogen.sh --build
+	if [ "$BUILD_OPT_SHARED" == "no" ]; then
+		./configure --prefix=$PWD/../target-root/usr --enable-shared=no
+	else
+		./configure --prefix=$PWD/../target-root/usr --enable-shared --disable-static
+	fi
+	make -j$JOBS
+	make install
+	touch .skip
+  fi
+popd
+
+
+if [ "$1" == "fcbuild" ]; then
+	echo "Core library built. Terminating"
+	exit 0
+fi
+
 if [ $BUILD_LIBRDKAFKA -eq 1 ]; then
         if [ ! -d librdkafka ]; then
 		git clone https://github.com/confluentinc/librdkafka.git
@@ -554,18 +612,6 @@ if [ ! -d bitstream ]; then
 	fi
 fi
 
-if [ ! -d libdvbpsi ]; then
-	git clone https://code.videolan.org/videolan/libdvbpsi.git
-	if [ "$DEP_LIBDVBPSI_TAG" != "" ]; then
-		cd libdvbpsi
-		git checkout $DEP_LIBDVBPSI_TAG
-		patch -p1 <../0000-libdvbpsi.patch
-		patch -p1 <../0001-libdvbpsi.patch
-		patch -p1 <../0002-libdvbpsi.patch
-		cd ..
-	fi
-fi
-
 if [ ! -d ffmpeg ]; then
 	git clone https://git.ffmpeg.org/ffmpeg.git
 	if [ "$DEP_FFMPEG_TAG" != "" ]; then
@@ -597,13 +643,6 @@ if [ $BUILD_NTT -eq 1 ]; then
 		if [ "$LIBNTT_TAG" != "" ]; then
 			cd libntt && git checkout $LIBNTT_TAG && cd ..
 		fi
-	fi
-fi
-
-if [ ! -d libltntstools ]; then
-	git clone $GITHUB_PREFIX/libltntstools.git
-	if [ "$LIBLTNTSTOOLS_TAG" != "" ]; then
-		cd libltntstools && git checkout $LIBLTNTSTOOLS_TAG && cd ..
 	fi
 fi
 
@@ -695,22 +734,6 @@ pushd bitstream
 	make PREFIX=$PWD/../target-root/usr install
 popd
 
-pushd libdvbpsi
-  if [ ! -f .skip ]; then
-	export CFLAGS="-I$PWD/../target-root/usr/include"
-	export LDFLAGS="-L$PWD/../target-root/usr/lib"
-	./bootstrap
-	if [ "$BUILD_OPT_SHARED" == "no" ]; then
-		./configure --prefix=$PWD/../target-root/usr --enable-shared=no $BUILD_OPT_LIBDVBPSI
-	else
-		./configure --prefix=$PWD/../target-root/usr --enable-shared --disable-static $BUILD_OPT_LIBDVBPSI
-	fi
-	make -j$JOBS
-	make install
-	touch .skip
-  fi
-popd
-
 pushd libklvanc
   if [ ! -f .skip ]; then
 	export CFLAGS="-I$PWD/../target-root/usr/include"
@@ -785,28 +808,6 @@ pushd ffmpeg
 	touch .skip
   fi
 popd
-
-pushd libltntstools
-  if [ ! -f .skip ]; then
-	export CFLAGS="-I$PWD/../target-root/usr/include $NIELSEN_INC"
-	export CPPFLAGS="-I$PWD/../target-root/usr/include $NIELSEN_INC"
-	export LDFLAGS="-L$PWD/../target-root/usr/lib $NIELSEN_LIB"
-	./autogen.sh --build
-	if [ "$BUILD_OPT_SHARED" == "no" ]; then
-		./configure --prefix=$PWD/../target-root/usr --enable-shared=no
-	else
-		./configure --prefix=$PWD/../target-root/usr --enable-shared --disable-static
-	fi
-	make -j$JOBS
-	make install
-	touch .skip
-  fi
-popd
-
-if [ "$1" == "fcbuild" ]; then
-	echo "Core library built. Terminating"
-	exit 0
-fi
 
 pushd ltntstools
 	export CFLAGS="-I$PWD/../target-root/usr/include $NIELSEN_INC"
