@@ -17,6 +17,7 @@ BUILD_JSONC=1
 BUILD_LIBOPENSSL=0
 BUILD_LIBRDKAFKA=0
 BUILD_MEDIAINFO=0
+BUILD_LIBWEBSOCKETS=0
 BUILD_OPT_SHARED=no
 BUILD_OPT_SRT=
 BUILD_OPT_LIBDVBPSI=
@@ -24,6 +25,7 @@ LIBRDKAFKA_TAG=57c56c5f8f0b5d2bdb6e64af2683fc22beb6c434
 LIBOPENSSL_TAG=5810149e6566564a790bd6d3279159528015f915
 LIBJSONC_TAG=6c55f65d07a972dbd2d1668aab2e0056ccdd52fc
 LIBZVBI_TAG=e62d905e00cdd1d6d4333ead90fb5b44bfb49371
+LIBWEBSOCKETS_TAG=v4.3-stable
 [ -z "$BUILD_NTT" ] && BUILD_NTT=0
 
 if [ "$1" == "" ]; then
@@ -482,6 +484,19 @@ elif [ "$1" == "v1.50.1" ]; then
 	BUILD_OPT_SHARED=yes
 	BUILD_OPT_SRT=--enable-debug=2
 	BUILD_OPT_LIBDVBPSI=--enable-debug
+elif [ "$1" == "v1.51.0" ]; then
+	DEP_BITSTREAM_TAG=20ce4345061499abc0389e9cd837665a62ad6add
+	DEP_LIBDVBPSI_TAG=d2a81c20a7704676048111b4f7ab24b95a904008
+	DEP_FFMPEG_TAG=release/4.4
+	LTNTSTOOLS_TAG=v1.51.0
+	LIBLTNTSTOOLS_TAG=9818f9e449f730642be48f6b334139d3abae0000
+	LIBKLSCTE35_TAG=vid.obe.1.4.0
+	LIBKLVANC_TAG=vid.obe.1.12.0
+	LIBNTT_TAG=9b4365fc44ce1edbc94325e4cddeadc504802ed9
+	BUILD_OPT_SHARED=yes
+	BUILD_OPT_SRT=--enable-debug=2
+	BUILD_OPT_LIBDVBPSI=--enable-debug
+	BUILD_LIBWEBSOCKETS=1
 elif [ "$1" == "stoth-dev" ]; then
 	DEP_BITSTREAM_TAG=20ce4345061499abc0389e9cd837665a62ad6add
 	DEP_LIBDVBPSI_TAG=d2a81c20a7704676048111b4f7ab24b95a904008
@@ -496,6 +511,7 @@ elif [ "$1" == "stoth-dev" ]; then
 	BUILD_OPT_LIBDVBPSI=--enable-debug
 	BUILD_NTT=0
 	GITHUB_PREFIX=git@github.com:stoth68000
+	BUILD_LIBWEBSOCKETS=1
 else
 	echo "Invalid argument"
 	exit 1
@@ -600,6 +616,17 @@ if [ ! -d libzvbi ]; then
                 git checkout $LIBZVBI_TAG
                 patch -p1 <../0000-libzvbi-remove-png-dep.patch
                 cd ..
+        fi
+fi
+
+if [ $BUILD_LIBWEBSOCKETS -eq 1 ]; then
+        if [ ! -d libwebsockets ]; then
+                git clone https://github.com/warmcat/libwebsockets.git
+                if [ "$LIBWEBSOCKETS_TAG" != "" ]; then
+                        cd libwebsockets
+                        git checkout $LIBWEBSOCKETS_TAG
+                        cd ..
+                fi
         fi
 fi
 
@@ -740,6 +767,39 @@ pushd libzvbi
 	touch .skip
   fi
 popd
+
+if [ $BUILD_LIBWEBSOCKETS -eq 1 ]; then
+	pushd libwebsockets
+		if [ ! -f .skip ]; then
+			mkdir -p build
+			cd build
+			if [ "$BUILD_OPT_SHARED" == "no" ]; then
+				LWS_SHARED=OFF
+				LWS_STATIC=ON
+			else
+				LWS_SHARED=ON
+				LWS_STATIC=OFF
+			fi
+			cmake .. \
+				-DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+				-DCMAKE_INSTALL_PREFIX=$PWD/../../target-root/usr \
+				-DCMAKE_BUILD_TYPE=Release \
+				-DLWS_WITH_SSL=OFF \
+				-DLWS_WITH_SHARED=$LWS_SHARED \
+				-DLWS_WITH_STATIC=$LWS_STATIC \
+				-DLWS_WITHOUT_TESTAPPS=ON \
+				-DLWS_WITHOUT_TEST_SERVER=ON \
+				-DLWS_WITHOUT_TEST_SERVER_EXTPOLL=ON \
+				-DLWS_WITHOUT_TEST_PING=ON \
+				-DLWS_WITHOUT_TEST_CLIENT=ON \
+				-DLWS_WITH_MINIMAL_EXAMPLES=OFF
+			make -j$JOBS
+			make install
+			cd ..
+			touch .skip
+		fi
+	popd
+fi
 
 pushd srt
   if [ ! -f .skip ]; then
