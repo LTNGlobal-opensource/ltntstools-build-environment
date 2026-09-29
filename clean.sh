@@ -13,3 +13,4 @@ rm -rf json-c
 rm -rf openssl
 rm -rf librdkafka
 rm -rf libzvbi
+rm -rf libwebsockets
