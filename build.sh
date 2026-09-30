@@ -780,6 +780,8 @@ if [ $BUILD_LIBWEBSOCKETS -eq 1 ]; then
 				LWS_SHARED=ON
 				LWS_STATIC=OFF
 			fi
+			LWS_SHARED=OFF
+			LWS_STATIC=ON
 			cmake .. \
 				-DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
 				-DCMAKE_INSTALL_PREFIX=$PWD/../../target-root/usr \
